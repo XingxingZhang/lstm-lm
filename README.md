@@ -18,3 +18,5 @@ CUDA_VISIBLE_DEVICES=$ID th train.lua --useGPU \
     | tee $log
 ```
 Where $train, $valid, $test are the training, validation and testing split, respectively.
+
+You can use the script here `experiments/test/run.sgd.sh`
