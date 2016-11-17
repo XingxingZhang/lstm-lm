@@ -22,6 +22,7 @@ test=/afs/inf.ed.ac.uk/group/project/img2txt/encdec/dataset/PWKP/an_ner/PWKP_108
 cd $codedir
 CUDA_VISIBLE_DEVICES=$ID th train.lua --useGPU \
     --dropout 0.2 --batchSize 20 --validBatchSize 20 --save $model --model LSTMLM \
+    --freqCut 1 \
     --nlayers 1 \
     --lr $lr \
     --optimMethod SGD \
