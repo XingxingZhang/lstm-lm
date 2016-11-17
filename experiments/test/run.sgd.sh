@@ -14,9 +14,9 @@ label=.sgd
 model=$curdir/model_$lr$label.t7
 log=$curdir/log_$lr$label.txt
 
-train=/afs/inf.ed.ac.uk/group/project/img2txt/encdec/dataset/PWKP/an_ner/PWKP_108016.tag.80.aner.train.dst
-valid=/afs/inf.ed.ac.uk/group/project/img2txt/encdec/dataset/PWKP/an_ner/PWKP_108016.tag.80.aner.valid.dst
-test=/afs/inf.ed.ac.uk/group/project/img2txt/encdec/dataset/PWKP/an_ner/PWKP_108016.tag.80.aner.test.dst
+train=your_trianing_text_file
+valid=your_validation_text_file
+test=your_test_text_file
 
 
 cd $codedir
