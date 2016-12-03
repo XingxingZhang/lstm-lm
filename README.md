@@ -30,4 +30,5 @@ You can also take a look at `experiments/test/run.sgd.wiki.sh`
 ## Train a language model on data with UNK replacement (e.g. the commonly used ptb dataset)
 1. disable `freqCut` by using `--freqCut 0`
 2. use `--defaultUNK xxx` to indicate `xxx` represents the unknow words.
+
 You can also take a look at `experiments/test/run.sgd.ptb.sh`
