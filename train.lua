@@ -15,9 +15,10 @@ local function getOpts()
   local cmd = torch.CmdLine()
   cmd:text('====== LSTM Language Model ======')
   cmd:option('--seed', 123, 'random seed')
-  cmd:option('--model', 'FFLSTMLM', 'model options: currently only support FFLSTMLM and LSTMLM')
+  cmd:option('--model', 'LSTMLM', 'model options: currently only support LSTMLM')
   cmd:option('--train', '/disk/scratch/XingxingZhang/lm/lstm_/data/ptb.train.txt', 'train file')
   cmd:option('--freqCut', 0, 'for word frequencies')
+  cmd:option('--defaultUNK', '', 'default unk. on ptb it should be <unk>')
   cmd:option('--ignoreCase', false, 'whether you will ignore the case')
   cmd:option('--valid', '/disk/scratch/XingxingZhang/lm/lstm_/data/ptb.valid.txt', 'valid file')
   cmd:option('--test', '/disk/scratch/XingxingZhang/lm/lstm_/data/ptb.test.txt', 'test file (in default: no test file)')
@@ -30,9 +31,6 @@ local function getOpts()
   cmd:option('--nhid', 200, 'hidden unit size')
   cmd:option('--window', 5, 'n-gram window size')
   cmd:option('--nlayers', 1, 'number of hidden layers')
-  cmd:option('--shareEmbed', false, 'share the embeddings of LSTM and NNLM')
-  cmd:option('--combine', 'GRU', 'the way to combine different models: linear combination and GRU')
-  cmd:option('--nnactiv', 'tanh', 'options: tanh and relu')
   cmd:option('--noShuffleTrain', false, 'if we should shuffle training data')
   
   cmd:option('--lr', 0.1, 'learning rate')
@@ -46,14 +44,6 @@ local function getOpts()
   cmd:option('--useGPU', false, 'use GPU')
   cmd:option('--patience', 1, 'stop training if no lower valid PPL is observed in [patience] consecutive epoch(s)')
   cmd:option('--save', 'model.t7', 'save model path')
-  
-  cmd:text()
-  cmd:text('Options for NCE')
-  cmd:option('--nneg', 20, 'number of negative samples')
-  cmd:option('--power', 0.75, 'for power for unigram frequency')
-  cmd:option('--lnZ', 9, 'default normalization term')
-  cmd:option('--learnZ', false, 'learn the normalization constant Z')
-  cmd:option('--normalizeUNK', false, 'if normalize UNK or not')
   
   cmd:text()
   cmd:text('Options for long jobs')
@@ -194,17 +184,10 @@ function Trainer:main()
   local opts = getOpts()
   initOpts(opts)
   self.opts = opts
-  local vocabPath = opts.train .. '.vocab.tmp.t7'
-  if paths.filep(vocabPath) then
-    opts.vocab = torch.load(vocabPath)
-    print(opts.vocab.nvocab)
-    print 'load vocab done!'
-  else
-    opts.vocab = RawLM_Dataset.createVocab(opts.train, opts.freqCut, opts.ignoreCase, true)
-    print 'creat vocab done!'
-    torch.save(vocabPath, opts.vocab)
-    print 'save vocab done!'
-  end
+  
+  opts.vocab = RawLM_Dataset.createVocab(opts.train, opts.freqCut, opts.ignoreCase, true, opts.defaultUNK)
+  print 'creat vocab done!'
+  
   opts.nvocab = opts.vocab.nvocab
   self.trainSize, self.validSize = unpack( RawLM_Dataset.getDataSize({opts.train, opts.valid}) )
   printf('train size = %d, valid size = %d\n', self.trainSize, self.validSize)
